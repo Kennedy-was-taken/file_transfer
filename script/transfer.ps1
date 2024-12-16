@@ -1,9 +1,9 @@
 #------------------------- Variables ----------------------------#
 
-$global:source = "C:\Users\Kennedy\Documents\Projects\Frontend_Mentor\vs_code\product-list-with-cart-main"
-$global:destination = "C:\Users\Kennedy\Documents\test" # Can change this
-$global:backup = "C:\Users\Kennedy\Documents\backup" # Can change this
-$global:numOfCommits = [int] 100 # Can change this
+$global:source = Get-Location
+$global:destination = "Enter destinaton Path" # You can change this to your destination path
+$global:backup = "Enter backup Path" # You can change this to your backup path
+$global:numOfCommits = [int] 100 # You can change it to any number to return a number of commits
 
 #----------------------- End of Variables -------------------------#
 
@@ -203,7 +203,6 @@ function copyToDestination($commits) {
     displayResults $newCopiedFiles $overwrittenFiles "1"
 }
 
-
 function displayResults($newCopiedFiles, $overwrittenFiles, $value) {
 
     if($value -eq "1"){
@@ -269,7 +268,6 @@ function displayResults($newCopiedFiles, $overwrittenFiles, $value) {
 
 }
 
-
 #---------------------- End of Methods --------------------------#
 
 
@@ -279,34 +277,60 @@ function displayResults($newCopiedFiles, $overwrittenFiles, $value) {
 if(isGitInstalled){
     Write-Host "Git found on the system"
 
-    if(hasGitRepository($global:source)){
-        # $value = checkStatus;
-        # Write-Host "$value";
-        Write-Host "The project is a git repository";
-
-        if(checkStatus($global:source)){
-            Write-host "No modified files found"
-            Write-host "All code has been commited"
-
-            $commits = getCommits($global:source);
-
-            # Write-Host $commits
-
-            backupSource $commits
-
-            copyToDestination $commits
+    if (doesPathExist $global:source){
+        Write-Host "Source Path exists"
+    
+        if (doesPathExist $global:destination){
+            Write-Host "destination Path exists"
+    
+            
+            if (doesPathExist $global:backup){
+                Write-Host "backup Path exists"
+    
+                if(hasGitRepository($global:source)){
+                    # $value = checkStatus;
+                    # Write-Host "$value";
+                    Write-Host "The project is a git repository";
+            
+                    if(checkStatus($global:source)){
+                        Write-host "No modified files found"
+                        Write-host "All code has been commited"
+            
+                        $commits = getCommits($global:source);
+            
+                        # Write-Host $commits
+            
+                        backupSource $commits
+            
+                        copyToDestination $commits
+                    }
+                    
+                    else{
+                        Write-host "Modified files found"
+                        Write-host "Commit your changes first before moving any files"
+                    }
+            
+                }
+                
+                else{
+                    Write-host "The project is not a git repository";
+                }
+    
+            }
+    
+            else{
+                Write-Host "backup Path does not exist"
+            }
+    
         }
         
         else{
-            Write-host "Modified files found"
-            Write-host "Commit your changes first before moving any files"
+            Write-Host "destination Path does not exist"
         }
-
-
     }
     
     else{
-        Write-host "The project is not a git repository";
+        Write-Host "Source Path does not exist"
     }
 
 }
@@ -316,5 +340,6 @@ else{
     Write-Warning "Install git first before proceeding"
     Write-Warning Link : "https://git-scm.com/downloads/win"
 }
+
 
 #---------------------- End of Call --------------------------#
